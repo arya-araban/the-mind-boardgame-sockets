@@ -1,5 +1,6 @@
 package mindgame;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
@@ -13,6 +14,7 @@ public class Player {
 
     public Player(String playerName) {
         this.playerName = playerName;
+        playerHand = new ArrayList<Integer>();
     }
 
     public List<Integer> getPlayerHand() {

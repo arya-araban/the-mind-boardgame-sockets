@@ -23,7 +23,7 @@ public class Game {
         this.players = new ArrayList<Player>();
         this.level = 1;
         this.ninjas = 1;
-
+        System.out.println("created game!");
     }
 
     public void addClientPlayer(String PlayerName) { // add real player
@@ -31,6 +31,7 @@ public class Game {
             players.add(new Player(PlayerName));
             this.numPlayers++;
             System.out.println("added player!");
+            System.out.println(players);
         }
 
     }
@@ -87,6 +88,9 @@ public class Game {
             botidx++;
         }
         giveCardsToPlayers(1);
+
+        System.out.println(players);
+        System.out.println(players.get(0).getPlayerHand());
 
     }
 

@@ -1,6 +1,5 @@
 package sockets;
 
-import mindgame.Player;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
-    private Player player;
+
     private String host;
     private int port;
 
@@ -43,24 +42,27 @@ public class Client {
 
         // ask for a nickname
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter a nickname: ");
-        nickname = sc.nextLine();
+
+
+        // read messages from keyboard and send to server
+        PrintStream output = new PrintStream(client.getOutputStream());
 
         if (clientSize == 1) {
-            System.out.println("Hey " + nickname + ", since you're the first client, you're also host!");
-            System.out.println("type 'start' to start the game");
+            System.out.println("Since you're the first client, you're also host! type 'start' to start the game\n");
 
             System.out.print("Specify Max Players: ");
-            int maxPlayers = sc.nextInt();
-
+            output.println(sc.nextLine() + "~~maxplayers");
             this.isHost = true;
         }
 
-        // read messages from keyboard and send to server
+        System.out.print("Enter a nickname: ");
+        output.println(sc.nextLine() + "~~nick"); // give this to the server!
+
+
         System.out.println("Send messages: ");
-        PrintStream output = new PrintStream(client.getOutputStream());
+
         while (sc.hasNextLine()) {
-            output.println(nickname + ": " + sc.nextLine());
+            output.println(sc.nextLine());
         }
 
         output.close();

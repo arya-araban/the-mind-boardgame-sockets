@@ -16,7 +16,7 @@ public class Server {
     private Game game;
     private int port;
     private List<PrintStream> clients;
-    private List<DataOutputStream> clientsDOS;
+    private List<InputStream> clientsIS;
     private ServerSocket server;
 
     public static void main(String[] args) throws IOException {
@@ -26,7 +26,7 @@ public class Server {
     public Server(int port) {
         this.port = port;
         this.clients = new ArrayList<PrintStream>();
-        this.clientsDOS = new ArrayList<DataOutputStream>();
+        this.clientsIS = new ArrayList<InputStream>();
     }
 
     public void run() throws IOException {
@@ -44,9 +44,8 @@ public class Server {
 
             // add client message to list
             this.clients.add(new PrintStream(client.getOutputStream()));
-
+            this.clientsIS.add(client.getInputStream());
             DataOutputStream client_dOut = new DataOutputStream(client.getOutputStream());
-            this.clientsDOS.add(client_dOut);
 
             client_dOut.write(clients.size());
             client_dOut.flush();
@@ -57,10 +56,28 @@ public class Server {
         }
     }
 
-    void broadcastMessages(String msg) {
-        for (int i = 0; i < this.clients.size(); i++) {
-            clients.get(i).println(i + "  " + msg);
+    void broadcastMessages(InputStream client, String msg) {
+
+
+        if (msg.contains("~~maxplayers") && client.equals(clientsIS.get(0))) {
+            msg = msg.substring(0, msg.indexOf('~'));
+            game = new Game(Integer.parseInt(msg));
+
         }
+
+        if (msg.contains("~~nick")) {
+            msg = msg.substring(0, msg.indexOf('~'));
+            System.out.println(msg);
+            game.addClientPlayer(msg);
+
+        }
+
+        if (msg.equals("start") && client.equals(clientsIS.get(0))) {
+
+            game.startGame();
+
+        }
+
     }
 }
 
@@ -83,8 +100,8 @@ class ClientHandler implements Runnable {
         while (sc.hasNextLine()) {
             message = sc.nextLine();
 
-            //System.out.println("got a clients message");
-            server.broadcastMessages(message);
+            //System.out.println(message);
+            server.broadcastMessages(client, message); //reminder: client is inputstream
         }
         sc.close();
     }
