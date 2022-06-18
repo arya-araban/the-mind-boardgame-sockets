@@ -7,15 +7,38 @@ import java.util.List;
 public class Game {
 
     private int level;
+
+
     private int hearts;
+
+
     private int ninjas;
 
     private int numPlayers;
     private final int maxPlayers;
 
+
     private List<Player> players; // player can be either client or bot(which is extended of client)
+
+
     private int cardOnTopDeck;
 
+    public int getHearts() {
+        return hearts;
+    }
+
+    public int getNinjas() {
+        return ninjas;
+    }
+
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public int getCardOnTopDeck() {
+        return cardOnTopDeck;
+    }
 
     public Game(int maxPlayers) {
         this.maxPlayers = maxPlayers;
