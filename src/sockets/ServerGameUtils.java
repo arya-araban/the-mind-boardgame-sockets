@@ -34,13 +34,15 @@ public class ServerGameUtils {
                 if (game.getPlayers().get(i).equals(player))
                     continue;
                 String strs = "";
-                for (int m = 0; m < game.getActiveNinjas(); m++) {
-                    strs = strs.concat(" " + String.valueOf(player.getPlayerHand().get(m)) + " ");
-                }
+
                 clients.get(i).println(player.getPlayerName() + "'s hand: " + "[" + strs +
-                        String.join("", Collections.nCopies(player.getPlayerHand().size() - game.getActiveNinjas(), " * ")) + "]");
+                        String.join("", Collections.nCopies(player.getPlayerHand().size(), " * ")) + "]");
             }
-            clients.get(i).println("\nhint: enter 'p' to play card | 'n' to play ninja\n");
+
+            if (!game.getNinjaRevealedDeck().isEmpty())
+                clients.get(i).println("\nNinja revealed deck: " + game.getNinjaRevealedDeck());
+
+            clients.get(i).println("\nHint: enter 'p' to play card | 'n' to play ninja\n");
         }
     }
 
@@ -61,8 +63,7 @@ public class ServerGameUtils {
     }
 
 
-
     private ServerGameUtils() {
-        throw new IllegalStateException("Utils class");
+        throw new IllegalStateException("ServerGameUtils class");
     }
 }

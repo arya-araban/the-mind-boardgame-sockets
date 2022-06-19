@@ -16,14 +16,14 @@ public class Game {
     private int ninjas;
 
 
-    private int activeNinjas;
-
     private int numPlayers;
     private final int maxPlayers;
 
 
     private List<Player> players; // player can be either client or bot(which is extended of client)
 
+
+    private String ninjaRevealedDeck; // when ninja card is played, all players put their smallest card here, observabale by all players.
 
     private int cardOnTopDeck;
 
@@ -48,14 +48,15 @@ public class Game {
         return cardOnTopDeck;
     }
 
-    public int getActiveNinjas() {
-        return activeNinjas;
+    public String getNinjaRevealedDeck() {
+        return ninjaRevealedDeck;
     }
 
     public Game(int maxPlayers) {
         this.maxPlayers = maxPlayers;
         this.hearts = maxPlayers;
         this.players = new ArrayList<Player>();
+        this.ninjaRevealedDeck = "";
         this.level = 1;
         this.ninjas = 1;
         System.out.println("created game!");
@@ -74,8 +75,9 @@ public class Game {
     public void advanceLevel() {
 
         this.level++;
-        this.activeNinjas = 0; // reset active ninjas
         this.cardOnTopDeck = 0; // reset card on deck
+        this.ninjaRevealedDeck = ""; // reset ninja revealed decks
+
         giveCardsToPlayers(this.level);
 
         if (this.level == 3 || this.level == 6 || this.level == 9) {
@@ -89,7 +91,6 @@ public class Game {
 
     public void addToDeck(Player plr) { //player plr will add smallest card in hand to deck
         boolean removedHeart = false;
-        System.out.println("debug");
         this.cardOnTopDeck = plr.getPlayerHand().get(0);
         plr.getPlayerHand().remove(0);
 
@@ -97,6 +98,8 @@ public class Game {
 
             if (p.equals(plr))
                 continue;
+
+
             for (int i = 0; i < p.getPlayerHand().size(); i++) {
                 int currentPlayerCard = p.getPlayerHand().get(i);
 
@@ -118,7 +121,18 @@ public class Game {
 
     public void activateNinja() {
         this.ninjas--;
-        this.activeNinjas++;
+
+        String str = "[ ";
+        for (Player plr : this.players) {
+            if (!plr.getPlayerHand().isEmpty()) {
+                str = str.concat(plr.getPlayerName() + ": " + plr.getPlayerHand().get(0) + " ~ ");
+                plr.getPlayerHand().remove(0);
+            }
+        }
+        str = str.substring(0, str.lastIndexOf("~"));
+        str = str.concat("]");
+
+        this.ninjaRevealedDeck = str;
     }
 
     public void startGame() {

@@ -102,6 +102,11 @@ public class Server {
             int playerIdx = clientsIS.indexOf(client);
             if (this.game.getNinjas() > 0) {
                 this.game.activateNinja();
+
+                if (checkAllHandsEmpty(this.game)) {
+                    game.advanceLevel();
+                }
+
                 printSetup(this.clients, this.game);
             } else {
                 clients.get(playerIdx).println("There are no ninja cards to play! ");
