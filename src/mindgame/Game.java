@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Game {
 
+
     private int level;
 
 
@@ -13,6 +14,9 @@ public class Game {
 
 
     private int ninjas;
+
+
+    private int activeNinjas;
 
     private int numPlayers;
     private final int maxPlayers;
@@ -22,6 +26,10 @@ public class Game {
 
 
     private int cardOnTopDeck;
+
+    public int getLevel() {
+        return level;
+    }
 
     public int getHearts() {
         return hearts;
@@ -38,6 +46,10 @@ public class Game {
 
     public int getCardOnTopDeck() {
         return cardOnTopDeck;
+    }
+
+    public int getActiveNinjas() {
+        return activeNinjas;
     }
 
     public Game(int maxPlayers) {
@@ -62,7 +74,8 @@ public class Game {
     public void advanceLevel() {
 
         this.level++;
-
+        this.activeNinjas = 0; // reset active ninjas
+        this.cardOnTopDeck = 0; // reset card on deck
         giveCardsToPlayers(this.level);
 
         if (this.level == 3 || this.level == 6 || this.level == 9) {
@@ -76,7 +89,7 @@ public class Game {
 
     public void addToDeck(Player plr) { //player plr will add smallest card in hand to deck
         boolean removedHeart = false;
-
+        System.out.println("debug");
         this.cardOnTopDeck = plr.getPlayerHand().get(0);
         plr.getPlayerHand().remove(0);
 
@@ -89,6 +102,7 @@ public class Game {
 
                 if (currentPlayerCard < cardOnTopDeck) {
                     p.getPlayerHand().remove(Integer.valueOf(currentPlayerCard));
+                    i--; // this is to make sure indices match with the new size
                     if (!removedHeart) {
                         this.hearts--;
                         removedHeart = true;
@@ -100,6 +114,11 @@ public class Game {
 
 
         }
+    }
+
+    public void activateNinja() {
+        this.ninjas--;
+        this.activeNinjas++;
     }
 
     public void startGame() {
