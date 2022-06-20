@@ -38,9 +38,12 @@ public class Client {
         DataInputStream dIn = new DataInputStream(client.getInputStream());
         int clientSize = dIn.read();
 
+        String clientAuthString = dIn.readUTF();
+
+
         new Thread(new ReceivedMessagesHandler(client.getInputStream())).start();
 
-        // ask for a nickname
+
         Scanner sc = new Scanner(System.in);
 
 
@@ -51,18 +54,19 @@ public class Client {
             System.out.println("Since you're the first client, you're also host! type 'start' to start the game\n");
 
             System.out.print("Specify Max Players: ");
-            output.println(sc.nextLine() + "~~maxplayers");
+
+            output.println(new Message(sc.nextLine(),clientAuthString,"maxplayers").toString());
             this.isHost = true;
         }
-
+        // ask for a nickname
         System.out.print("Enter a nickname: ");
-        output.println(sc.nextLine() + "~~nick"); // give this to the server!
+        output.println(new Message(sc.nextLine(),clientAuthString,"nick").toString()); // give this to the server!
 
 
         System.out.println("Send messages: ");
 
         while (sc.hasNextLine()) {
-            output.println(sc.nextLine());
+            output.println(new Message(sc.nextLine(),clientAuthString).toString());
         }
 
         output.close();

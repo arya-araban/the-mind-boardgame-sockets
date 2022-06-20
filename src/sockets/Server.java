@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,20 +20,20 @@ public class Server {
     private Game game;
     private int port;
     private List<PrintStream> clients;
-    private List<InputStream> clientsIS;
+    private List<String> clientAuthStrings;
     private ServerSocket server;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
         new Server(12345).run();
     }
 
     public Server(int port) {
         this.port = port;
         this.clients = new ArrayList<PrintStream>();
-        this.clientsIS = new ArrayList<InputStream>();
+        this.clientAuthStrings = new ArrayList<String>();
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, NoSuchAlgorithmException {
         server = new ServerSocket(port) {
             protected void finalize() throws IOException {
                 this.close();
@@ -46,42 +48,52 @@ public class Server {
 
             // add client message to list
             this.clients.add(new PrintStream(client.getOutputStream()));
-            this.clientsIS.add(client.getInputStream());
+
             DataOutputStream client_dOut = new DataOutputStream(client.getOutputStream());
 
             client_dOut.write(clients.size());
             client_dOut.flush();
 
-
+            String clientSR = generateAuth(6); //the secure random string used to identify client
+            this.clientAuthStrings.add(clientSR);
+            client_dOut.writeUTF(clientSR);
+            client_dOut.flush();
             // create a new thread for client handling
             new Thread(new ClientHandler(this, client.getInputStream())).start();
         }
     }
 
 
-    void broadcastMessages(InputStream client, String msg) {
+    void broadcastMessages(String msg) {
+        ArrayList<String> dmsg = deserializeMessage(msg);
+        String message = dmsg.get(0);
+        String authString = dmsg.get(1);
+        String specialFlag = dmsg.size() == 3 ? dmsg.get(2) : null;
 
+        if (specialFlag != null) {
 
-        if (msg.contains("~~maxplayers") && client.equals(clientsIS.get(0))) {
-            msg = msg.substring(0, msg.indexOf('~'));
-            game = new Game(Integer.parseInt(msg));
+            if (clientAuthStrings.get(0).equals(authString) && specialFlag.equals("maxplayers")) {
+
+                game = new Game(Integer.parseInt(message));
+
+            }
+
+            if (specialFlag.equals("nick")) {
+                System.out.println(message);
+                game.addClientPlayer(message);
+
+            }
 
         }
 
-        if (msg.contains("~~nick")) {
-            msg = msg.substring(0, msg.indexOf('~'));
-            System.out.println(msg);
-            game.addClientPlayer(msg);
 
-        }
-
-        if (msg.equals("start") && client.equals(clientsIS.get(0))) {
+        if (clientAuthStrings.get(0).equals(authString) && message.equals("start")) {
             game.startGame();
             printSetup(this.clients, game);
         }
 
-        if (msg.equals("p")) {
-            int playerIdx = clientsIS.indexOf(client);
+        if (message.equals("p")) {
+            int playerIdx = this.clientAuthStrings.indexOf(authString);
             try {
                 game.addToDeck(game.getPlayers().get(playerIdx));
                 if (checkAllHandsEmpty(this.game)) {
@@ -98,8 +110,8 @@ public class Server {
             }
         }
 
-        if (msg.equals("n")) {
-            int playerIdx = clientsIS.indexOf(client);
+        if (message.equals("n")) {
+            int playerIdx = this.clientAuthStrings.indexOf(authString);
             if (this.game.getNinjas() > 0) {
                 this.game.activateNinja();
 
@@ -135,7 +147,7 @@ class ClientHandler implements Runnable {
             message = sc.nextLine();
 
             //System.out.println(message);
-            server.broadcastMessages(client, message); //reminder: client is inputstream
+            server.broadcastMessages(message); //reminder: client is inputstream
         }
         sc.close();
     }

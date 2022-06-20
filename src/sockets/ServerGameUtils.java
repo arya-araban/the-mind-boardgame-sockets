@@ -5,7 +5,10 @@ import mindgame.Player;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,8 +65,30 @@ public class ServerGameUtils {
         System.exit(0);
     }
 
+    public static String generateAuth(int length) throws NoSuchAlgorithmException {
+        String chrs = "0123456789abcdefghijklmnopqrstuvwxyz-_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        SecureRandom secureRandom = SecureRandom.getInstanceStrong();
+        // length is the length of the string you want
+        String customTag = secureRandom.ints(length, 0, chrs.length()).mapToObj(i -> chrs.charAt(i))
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
+
+        return customTag;
+
+    }
+
+    public static ArrayList<String> deserializeMessage(String message) {
+        return new ArrayList<String>(Arrays.asList(message.split("\\s*~\\s*"))); //seperates on ~
+
+    }
+
 
     private ServerGameUtils() {
         throw new IllegalStateException("ServerGameUtils class");
     }
+
+//    public static void main(String[] args) {
+//        String a=null;
+//        System.out.println(a==null);
+//    }
 }
+
