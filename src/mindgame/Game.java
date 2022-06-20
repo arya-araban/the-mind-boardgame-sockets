@@ -17,6 +17,11 @@ public class Game {
 
 
     private int numPlayers;
+
+
+
+    private boolean gameStarted;
+
     private final int maxPlayers;
 
 
@@ -27,6 +32,15 @@ public class Game {
 
     private int cardOnTopDeck;
 
+
+
+    public boolean hasGameStarted() {
+        return gameStarted;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
     public int getLevel() {
         return level;
     }
@@ -136,6 +150,7 @@ public class Game {
     }
 
     public void startGame() {
+        this.gameStarted = true;
         int numPlayers = this.players.size(); // initially we get the number of client players in the game
         int botidx = 1;
         while (numPlayers < this.maxPlayers) {

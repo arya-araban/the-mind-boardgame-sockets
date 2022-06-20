@@ -54,19 +54,27 @@ public class Client {
             System.out.println("Since you're the first client, you're also host! type 'start' to start the game\n");
 
             System.out.print("Specify Max Players: ");
-
-            output.println(new Message(sc.nextLine(),clientAuthString,"maxplayers").toString());
+            String maxPlayers = sc.nextLine();
+            while (!maxPlayers.matches("-?(0|[1-9]\\d*)")) {
+                System.out.println("please enter an integer");
+                maxPlayers = sc.nextLine();
+            }
+            output.println(new Message(maxPlayers, clientAuthString, "maxplayers").toString());
             this.isHost = true;
         }
         // ask for a nickname
         System.out.print("Enter a nickname: ");
-        output.println(new Message(sc.nextLine(),clientAuthString,"nick").toString()); // give this to the server!
+        output.println(new Message(sc.nextLine(), clientAuthString, "nick").toString()); // give this to the server!
 
+        if (clientSize == 1) {
+            System.out.println("Send messages: ");
+        } else {
+            System.out.println("awaiting host to start game..");
+        }
 
-        System.out.println("Send messages: ");
 
         while (sc.hasNextLine()) {
-            output.println(new Message(sc.nextLine(),clientAuthString).toString());
+            output.println(new Message(sc.nextLine(), clientAuthString).toString());
         }
 
         output.close();
@@ -88,7 +96,8 @@ class ReceivedMessagesHandler implements Runnable {
         // receive server messages and print out to screen
         Scanner s = new Scanner(server);
         while (s.hasNextLine()) {
-            System.out.println(s.nextLine());
+            String msg = s.nextLine();
+            System.out.println(msg);
         }
         s.close();
     }

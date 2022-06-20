@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -64,24 +63,30 @@ public class Server {
     }
 
 
-    void broadcastMessages(String msg) {
+    void processMessages(String msg) {
         ArrayList<String> dmsg = deserializeMessage(msg);
         String message = dmsg.get(0);
         String authString = dmsg.get(1);
         String specialFlag = dmsg.size() == 3 ? dmsg.get(2) : null;
 
+        int playerIdx = this.clientAuthStrings.indexOf(authString);
+
         if (specialFlag != null) {
 
             if (clientAuthStrings.get(0).equals(authString) && specialFlag.equals("maxplayers")) {
 
-                game = new Game(Integer.parseInt(message));
+                this.game = new Game(Integer.parseInt(message));
 
             }
 
             if (specialFlag.equals("nick")) {
                 System.out.println(message);
-                game.addClientPlayer(message);
 
+                if (this.game.getPlayers().size() < this.game.getMaxPlayers()) {
+                    game.addClientPlayer(message);
+                } else {
+                    clients.get(playerIdx).println("unfortunately there's no room left for you in this game!");
+                }
             }
 
         }
@@ -90,10 +95,11 @@ public class Server {
         if (clientAuthStrings.get(0).equals(authString) && message.equals("start")) {
             game.startGame();
             printSetup(this.clients, game);
+
         }
 
-        if (message.equals("p")) {
-            int playerIdx = this.clientAuthStrings.indexOf(authString);
+        if (message.equals("p") && game.hasGameStarted()) {
+
             try {
                 game.addToDeck(game.getPlayers().get(playerIdx));
                 if (checkAllHandsEmpty(this.game)) {
@@ -110,8 +116,7 @@ public class Server {
             }
         }
 
-        if (message.equals("n")) {
-            int playerIdx = this.clientAuthStrings.indexOf(authString);
+        if (message.equals("n") && game.hasGameStarted()) {
             if (this.game.getNinjas() > 0) {
                 this.game.activateNinja();
 
@@ -147,7 +152,7 @@ class ClientHandler implements Runnable {
             message = sc.nextLine();
 
             //System.out.println(message);
-            server.broadcastMessages(message); //reminder: client is inputstream
+            server.processMessages(message);
         }
         sc.close();
     }

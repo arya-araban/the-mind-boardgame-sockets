@@ -19,10 +19,12 @@ public class ServerGameUtils {
             if (System.getProperty("os.name").contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             } else {
-                ps.println("\033\143");
+                //ps.println("\033\143");
+                for (int i = 0; i < 50; ++i) ps.println();
             }
         } catch (IOException | InterruptedException ex) {
         }
+
     }
 
     public static void printSetup(List<PrintStream> clients, Game game) {
@@ -61,6 +63,7 @@ public class ServerGameUtils {
     public static void printGameOver(List<PrintStream> clients) {
         for (PrintStream client : clients) {
             client.println("All hearts have been lost. Game Over!");
+            client.println("kill");
         }
         System.exit(0);
     }
@@ -86,9 +89,6 @@ public class ServerGameUtils {
         throw new IllegalStateException("ServerGameUtils class");
     }
 
-//    public static void main(String[] args) {
-//        String a=null;
-//        System.out.println(a==null);
-//    }
+
 }
 

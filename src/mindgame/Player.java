@@ -5,12 +5,18 @@ import java.util.List;
 
 public class Player {
 
-    private final String playerName;
+    private String playerName;
+
     private List<Integer> playerHand;
 
     public String getPlayerName() {
         return playerName;
     }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
 
     public Player(String playerName) {
         this.playerName = playerName;
@@ -29,7 +35,6 @@ public class Player {
     public void clearHand() {
         playerHand.clear();
     }
-
 
 
 }
