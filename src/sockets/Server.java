@@ -103,12 +103,18 @@ public class Server {
             try {
                 game.addToDeck(game.getPlayers().get(playerIdx));
                 if (checkAllHandsEmpty(this.game)) {
-                    game.advanceLevel();
+                    if (game.getLevel() < 12)
+                        game.advanceLevel();
+                    else {
+                        broadCastMessage(this.clients, "You have won the game. Congratulations!");
+                        closeSockets(this.clients);
+                    }
                 }
                 printSetup(this.clients, this.game);
 
                 if (game.getHearts() == 0) {
-                    printGameOver(this.clients);
+                    broadCastMessage(this.clients, "All hearts have been lost. Game Over!");
+                    closeSockets(this.clients);
                 }
 
             } catch (IndexOutOfBoundsException IOB) {

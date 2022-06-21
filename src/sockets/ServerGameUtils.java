@@ -27,6 +27,7 @@ public class ServerGameUtils {
 
     }
 
+
     public static void printSetup(List<PrintStream> clients, Game game) {
         for (int i = 0; i < clients.size(); i++) {
             clearConsole(clients.get(i)); //clear console
@@ -60,14 +61,6 @@ public class ServerGameUtils {
     }
 
 
-    public static void printGameOver(List<PrintStream> clients) {
-        for (PrintStream client : clients) {
-            client.println("All hearts have been lost. Game Over!");
-            client.println("kill"); // send this to each client to close it!
-        }
-        System.exit(0); // close server
-    }
-
     public static String generateAuth(int length) throws NoSuchAlgorithmException {
         String chrs = "0123456789abcdefghijklmnopqrstuvwxyz-_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         SecureRandom secureRandom = SecureRandom.getInstanceStrong();
@@ -79,11 +72,21 @@ public class ServerGameUtils {
 
     }
 
+    public static void broadCastMessage(List<PrintStream> clients, String message) {
+        for (PrintStream client : clients) {
+            client.println(message);
+        }
+    }
+
     public static ArrayList<String> deserializeMessage(String message) {
         return new ArrayList<String>(Arrays.asList(message.split("\\s*~\\s*"))); //seperates on ~
 
     }
 
+    public static void closeSockets(List<PrintStream> clients) { //close all clients and close server
+        broadCastMessage(clients, "kill"); // kill clients
+        System.exit(0); // kill server 
+    }
 
     private ServerGameUtils() {
         throw new IllegalStateException("ServerGameUtils class");
