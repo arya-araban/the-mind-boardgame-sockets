@@ -14,6 +14,9 @@ import java.util.List;
 
 public class ServerGameUtils {
 
+    static List<String> emojis = Arrays.asList(":)", ":(", ":o", ":D");
+
+
     public static void clearConsole(PrintStream ps) {
         try {
             if (System.getProperty("os.name").contains("Windows")) {
@@ -48,7 +51,8 @@ public class ServerGameUtils {
             if (!game.getNinjaRevealedDeck().isEmpty())
                 clients.get(i).println("\nNinja revealed deck: " + game.getNinjaRevealedDeck());
 
-            clients.get(i).println("\nHint: enter 'p' to play card | 'n' to play ninja\n");
+            clients.get(i).println("\nHint: Enter 'p' to play card | 'n' to play ninja -- Sendable emojis = " + emojis + "\n");
+
         }
     }
 
@@ -85,7 +89,7 @@ public class ServerGameUtils {
 
     public static void closeSockets(List<PrintStream> clients) { //close all clients and close server
         broadCastMessage(clients, "kill"); // kill clients
-        System.exit(0); // kill server 
+        System.exit(0); // kill server
     }
 
     private ServerGameUtils() {

@@ -63,8 +63,8 @@ public class Server {
     }
 
 
-    void processMessages(String msg) {
-        ArrayList<String> dmsg = deserializeMessage(msg);
+    void processMessages(String serializedMessage) {
+        ArrayList<String> dmsg = deserializeMessage(serializedMessage);
         String message = dmsg.get(0);
         String authString = dmsg.get(1);
         String specialFlag = dmsg.size() == 3 ? dmsg.get(2) : null;
@@ -98,6 +98,11 @@ public class Server {
 
         }
 
+        if (clientAuthStrings.get(0).equals(authString) && message.equals("start") && !game.hasGameStarted()) {
+            game.startGame();
+            printSetup(this.clients, game);
+        }
+        
         if (message.equals("p") && game.hasGameStarted()) {
 
             try {
@@ -134,6 +139,9 @@ public class Server {
             } else {
                 clients.get(playerIdx).println("There are no ninja cards to play! ");
             }
+        }
+        if (emojis.contains(message) && game.hasGameStarted()) {
+            broadCastMessage(this.clients, game.getPlayers().get(playerIdx).getPlayerName() + ": " + message);
         }
     }
 }
