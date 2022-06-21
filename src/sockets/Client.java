@@ -5,9 +5,11 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
 
@@ -18,9 +20,18 @@ public class Client {
     private String nickname;
 
 
-    public static void main(String[] args) throws UnknownHostException, IOException {
-        new Client("127.0.0.1", 12345).run();
+    public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
+        System.out.println("Awaiting server response.."); //if server not open, when it opens client will connect.
+        while (true) {
+            try {
+                new Client("127.0.0.1", 12345).run();
+                break;
+            } catch (Exception e) {
+                TimeUnit.SECONDS.sleep(2);
+            }
+        }
     }
+
 
     public Client(String host, int port) {
         this.host = host;
@@ -97,8 +108,13 @@ class ReceivedMessagesHandler implements Runnable {
         Scanner s = new Scanner(server);
         while (s.hasNextLine()) {
             String msg = s.nextLine();
+            if (msg.equals("kill")) {
+                System.exit(0);
+            }
             System.out.println(msg);
+
         }
+
         s.close();
     }
 }

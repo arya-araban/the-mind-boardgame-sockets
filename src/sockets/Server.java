@@ -111,7 +111,7 @@ public class Server {
                     printGameOver(this.clients);
                 }
 
-            } catch (Exception IndexOutOfBoundsException) {
+            } catch (IndexOutOfBoundsException IOB) {
                 clients.get(playerIdx).println("you don't have any cards to play!");
             }
         }

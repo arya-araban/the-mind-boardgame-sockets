@@ -63,9 +63,9 @@ public class ServerGameUtils {
     public static void printGameOver(List<PrintStream> clients) {
         for (PrintStream client : clients) {
             client.println("All hearts have been lost. Game Over!");
-            client.println("kill");
+            client.println("kill"); // send this to each client to close it!
         }
-        System.exit(0);
+        System.exit(0); // close server
     }
 
     public static String generateAuth(int length) throws NoSuchAlgorithmException {
