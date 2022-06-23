@@ -11,16 +11,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import mindgame.Bot;
 import mindgame.Game;
+import mindgame.Player;
 
 import static sockets.ServerGameUtils.*;
 
 public class Server {
+    public Game getGame() {
+        return game;
+    }
+
     private Game game;
     private int port;
+
+    public List<PrintStream> getClients() {
+        return clients;
+    }
+
     private List<PrintStream> clients;
     private List<String> clientAuthStrings;
     private ServerSocket server;
+
+    public List<Thread> getBotThreads() {
+        return botThreads;
+    }
+
+    private List<Thread> botThreads;
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
         new Server(12345).run();
@@ -30,7 +47,10 @@ public class Server {
         this.port = port;
         this.clients = new ArrayList<PrintStream>();
         this.clientAuthStrings = new ArrayList<String>();
+        this.botThreads = new ArrayList<Thread>();
     }
+
+
 
     public void run() throws IOException, NoSuchAlgorithmException {
         server = new ServerSocket(port) {
@@ -92,9 +112,17 @@ public class Server {
         }
 
 
-        if (clientAuthStrings.get(0).equals(authString) && message.equals("start")) {
+        if (clientAuthStrings.get(0).equals(authString) && message.equals("start") && !game.hasGameStarted()) {
             game.startGame();
             printSetup(this.clients, game);
+
+            for (Player plr : game.getPlayers()) {
+                if (plr instanceof Bot) {
+                    Thread bt = new Thread(new BotThread(this, (Bot) plr));
+                    botThreads.add(bt);
+                    bt.start();
+                }
+            }
 
         }
 
@@ -102,20 +130,24 @@ public class Server {
             game.startGame();
             printSetup(this.clients, game);
         }
-        
+
         if (message.equals("p") && game.hasGameStarted()) {
 
             try {
                 game.addToDeck(game.getPlayers().get(playerIdx));
-                if (checkAllHandsEmpty(this.game)) {
-                    if (game.getLevel() < 12)
+                if (game.getTotalNumCards() == 0) {
+
+                    if (game.getLevel() < 12) {
                         game.advanceLevel();
-                    else {
+                    } else {
                         broadCastMessage(this.clients, "You have won the game. Congratulations!");
                         closeSockets(this.clients);
                     }
+
                 }
                 printSetup(this.clients, this.game);
+
+                resetAllBotThreads(this.botThreads);
 
                 if (game.getHearts() == 0) {
                     broadCastMessage(this.clients, "All hearts have been lost. Game Over!");
@@ -131,7 +163,7 @@ public class Server {
             if (this.game.getNinjas() > 0) {
                 this.game.activateNinja();
 
-                if (checkAllHandsEmpty(this.game)) {
+                if (game.getTotalNumCards() == 0) { //everyone has played their cards
                     game.advanceLevel();
                 }
 

@@ -1,5 +1,6 @@
 package sockets;
 
+import mindgame.Bot;
 import mindgame.Game;
 import mindgame.Player;
 
@@ -15,20 +16,6 @@ import java.util.List;
 public class ServerGameUtils {
 
     static List<String> emojis = Arrays.asList(":)", ":(", ":o", ":D");
-
-
-    public static void clearConsole(PrintStream ps) {
-        try {
-            if (System.getProperty("os.name").contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                //ps.println("\033\143");
-                for (int i = 0; i < 50; ++i) ps.println();
-            }
-        } catch (IOException | InterruptedException ex) {
-        }
-
-    }
 
 
     public static void printSetup(List<PrintStream> clients, Game game) {
@@ -56,12 +43,17 @@ public class ServerGameUtils {
         }
     }
 
-    public static boolean checkAllHandsEmpty(Game game) {
-        for (Player player : game.getPlayers()) {
-            if (!player.getPlayerHand().isEmpty())
-                return false;
+    public static void clearConsole(PrintStream ps) {
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                //ps.println("\033\143");
+                for (int i = 0; i < 50; ++i) ps.println();
+            }
+        } catch (IOException | InterruptedException ex) {
         }
-        return true;
+
     }
 
 
@@ -91,6 +83,22 @@ public class ServerGameUtils {
         broadCastMessage(clients, "kill"); // kill clients
         System.exit(0); // kill server
     }
+
+    public static void resetAllBotThreads(List<Thread> botThreads) {
+        for (Thread bot : botThreads) {
+            bot.interrupt(); //when interrupted, their threads will stop
+            bot.start();
+        }
+    }
+
+//    public static void startAllBots(Game game) {
+//        for (Player plr : game.getPlayers()) {
+//            if (plr instanceof Bot) {
+//                new BotThread().start();
+//            }
+//        }
+//    }
+
 
     private ServerGameUtils() {
         throw new IllegalStateException("ServerGameUtils class");

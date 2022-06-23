@@ -19,7 +19,6 @@ public class Game {
     private int numPlayers;
 
 
-
     private boolean gameStarted;
 
     private final int maxPlayers;
@@ -33,7 +32,6 @@ public class Game {
     private int cardOnTopDeck;
 
 
-
     public boolean hasGameStarted() {
         return gameStarted;
     }
@@ -41,6 +39,7 @@ public class Game {
     public int getMaxPlayers() {
         return maxPlayers;
     }
+
     public int getLevel() {
         return level;
     }
@@ -65,6 +64,8 @@ public class Game {
     public String getNinjaRevealedDeck() {
         return ninjaRevealedDeck;
     }
+
+
 
     public Game(int maxPlayers) {
         this.maxPlayers = maxPlayers;
@@ -158,11 +159,19 @@ public class Game {
             numPlayers++;
             botidx++;
         }
-        giveCardsToPlayers(1);
+        giveCardsToPlayers(this.level);
 
         System.out.println(players);
         System.out.println(players.get(0).getPlayerHand());
 
+    }
+
+    public int getTotalNumCards() {
+        int total = 0;
+        for (Player player : getPlayers()) {
+            total += player.getPlayerHand().size();
+        }
+        return total;
     }
 
     private void giveCardsToPlayers(int numCards) { // the amount of cards given will be the same as current level

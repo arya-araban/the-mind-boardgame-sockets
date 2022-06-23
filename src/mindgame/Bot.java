@@ -14,12 +14,12 @@ public class Bot extends Player {
 
     public Bot(String playerName) {
         super(playerName);
-        this.strategy = randomNumInRange((float) 0.1, 1); // player with start 0 plays the earliest, 1 plays the latest
+        this.strategy = randomNumInRange((float) 0.1, 1); // player with start 0.1 plays the earliest, 1 plays the latest
     }
 
-    public float waitTimeToPlay(int otherPlayerNumCards) {
+    public float waitTimeToPlay(int otherPlayersNumCards) {
         // the main formula used to specify wait time based on strategy and current game state
-        return mapRanges(this.getSmallestCard(), 1, 100, 1, 10) * this.strategy * otherPlayerNumCards / 4;
+        return mapRanges(this.getSmallestCard(), 1, 100, 1, 10) * this.strategy * otherPlayersNumCards / 4;
     }
 
 
