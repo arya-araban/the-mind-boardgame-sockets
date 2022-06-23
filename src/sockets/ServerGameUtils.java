@@ -84,12 +84,7 @@ public class ServerGameUtils {
         System.exit(0); // kill server
     }
 
-    public static void resetAllBotThreads(List<Thread> botThreads) {
-        for (Thread bot : botThreads) {
-            bot.interrupt(); //when interrupted, their threads will stop
-            bot.start();
-        }
-    }
+
 
 //    public static void startAllBots(Game game) {
 //        for (Player plr : game.getPlayers()) {

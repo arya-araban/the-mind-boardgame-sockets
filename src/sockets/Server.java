@@ -15,6 +15,7 @@ import mindgame.Bot;
 import mindgame.Game;
 import mindgame.Player;
 
+import static sockets.BotThread.resetAllBotThreads;
 import static sockets.ServerGameUtils.*;
 
 public class Server {
@@ -49,7 +50,6 @@ public class Server {
         this.clientAuthStrings = new ArrayList<String>();
         this.botThreads = new ArrayList<Thread>();
     }
-
 
 
     public void run() throws IOException, NoSuchAlgorithmException {
@@ -147,7 +147,7 @@ public class Server {
                 }
                 printSetup(this.clients, this.game);
 
-                resetAllBotThreads(this.botThreads);
+                resetAllBotThreads(this);
 
                 if (game.getHearts() == 0) {
                     broadCastMessage(this.clients, "All hearts have been lost. Game Over!");
