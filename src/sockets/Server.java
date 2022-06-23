@@ -15,7 +15,6 @@ import mindgame.Bot;
 import mindgame.Game;
 import mindgame.Player;
 
-import static sockets.BotThread.resetAllBotThreads;
 import static sockets.ServerGameUtils.*;
 
 public class Server {
@@ -134,25 +133,7 @@ public class Server {
         if (message.equals("p") && game.hasGameStarted()) {
 
             try {
-                game.addToDeck(game.getPlayers().get(playerIdx));
-                if (game.getTotalNumCards() == 0) {
-
-                    if (game.getLevel() < 12) {
-                        game.advanceLevel();
-                    } else {
-                        broadCastMessage(this.clients, "You have won the game. Congratulations!");
-                        closeSockets(this.clients);
-                    }
-
-                }
-                printSetup(this.clients, this.game);
-
-                resetAllBotThreads(this);
-
-                if (game.getHearts() == 0) {
-                    broadCastMessage(this.clients, "All hearts have been lost. Game Over!");
-                    closeSockets(this.clients);
-                }
+                playCard(game.getPlayers().get(playerIdx));
 
             } catch (IndexOutOfBoundsException IOB) {
                 clients.get(playerIdx).println("you don't have any cards to play!");
@@ -176,6 +157,47 @@ public class Server {
             broadCastMessage(this.clients, game.getPlayers().get(playerIdx).getPlayerName() + ": " + message);
         }
     }
+
+    public void playCard(Player plr) {
+        game.addToDeck(plr);
+        if (game.getTotalNumCards() == 0) {
+
+            if (game.getLevel() < 12) {
+                game.advanceLevel();
+            } else {
+                broadCastMessage(this.clients, "You have won the game. Congratulations!");
+                closeSockets(this.clients);
+            }
+
+        }
+        printSetup(this.clients, this.game);
+
+        resetAllBotThreads();
+
+        if (game.getHearts() == 0) {
+            broadCastMessage(this.clients, "All hearts have been lost. Game Over!");
+            closeSockets(this.clients);
+        }
+    }
+
+
+    private void resetAllBotThreads() {
+        for (Thread bot : this.getBotThreads()) { // cancel execution of all bot threads
+            bot.interrupt();
+        }
+
+        this.getBotThreads().clear();
+
+        for (Player plr : this.getGame().getPlayers()) { //restart all threads
+            if (plr instanceof Bot) {
+                Thread bt = new Thread(new BotThread(this, (Bot) plr));
+                this.getBotThreads().add(bt);
+                bt.start();
+            }
+        }
+    }
+
+
 }
 
 class ClientHandler implements Runnable {

@@ -28,29 +28,9 @@ public class BotThread implements Runnable { //botThread to setBot
             return;
         }
 
-        server.getGame().addToDeck(bot);
-
-        printSetup(server.getClients(), server.getGame());
-
-        resetAllBotThreads(server);
+        server.playCard(bot);
 
 
     }
 
-    public static void resetAllBotThreads(Server server) {
-        for (Thread bot : server.getBotThreads()) {// cancel execution of all threads
-            bot.interrupt();
-        }
-
-        server.getBotThreads().clear();
-
-        for (Player plr : server.getGame().getPlayers()) { //restart all threads
-            if (plr instanceof Bot) {
-                Thread bt = new Thread(new BotThread(server, (Bot) plr));
-                server.getBotThreads().add(bt);
-                bt.start();
-            }
-        }
-
-
-    }}
+}
