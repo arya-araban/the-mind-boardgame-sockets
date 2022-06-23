@@ -7,6 +7,8 @@ public class Player {
 
     private String playerName;
 
+
+
     private List<Integer> playerHand;
 
     public String getPlayerName() {
@@ -17,6 +19,9 @@ public class Player {
         this.playerName = playerName;
     }
 
+    public void setPlayerHand(List<Integer> playerHand) {
+        this.playerHand = playerHand;
+    }
 
     public Player(String playerName) {
         this.playerName = playerName;
@@ -27,6 +32,9 @@ public class Player {
         return playerHand;
     }
 
+    public int getSmallestCard() {
+        return playerHand.get(0);
+    }
 
     public void addCard(int cardNumber) {
         playerHand.add(cardNumber);
