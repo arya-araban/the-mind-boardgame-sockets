@@ -72,7 +72,7 @@ public class Game {
         this.hearts = maxPlayers;
         this.players = new ArrayList<Player>();
         this.ninjaRevealedDeck = "";
-        this.level = 3;
+        this.level = 1;
         this.ninjas = 1;
         System.out.println("created game!");
     }
