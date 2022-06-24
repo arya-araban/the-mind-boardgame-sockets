@@ -1,4 +1,4 @@
-# the-mind-boardgame-sockets
+# The Mind Boardgame
 
 Implementation of The Mind boardgame in a client/server enviorment using sockets in Java. 
 
