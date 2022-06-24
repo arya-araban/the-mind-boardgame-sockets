@@ -155,7 +155,7 @@ public class Game {
         int numPlayers = this.players.size(); // initially we get the number of client players in the game
         int botidx = 1;
         while (numPlayers < this.maxPlayers) {
-            players.add(new Bot("bot" + botidx)); // TODO: add time parameter to mind_game.Bot constructor
+            players.add(new Bot("bot" + botidx));
             numPlayers++;
             botidx++;
         }

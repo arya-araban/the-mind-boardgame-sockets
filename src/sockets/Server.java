@@ -15,14 +15,14 @@ import mindgame.Bot;
 import mindgame.Game;
 import mindgame.Player;
 
+import static sockets.FileSocketUtils.SetServerInfo;
 import static sockets.ServerGameUtils.*;
 
 public class Server {
-    public Game getGame() {
-        return game;
-    }
+
 
     private Game game;
+
     private int port;
 
     public List<PrintStream> getClients() {
@@ -33,23 +33,32 @@ public class Server {
     private List<String> clientAuthStrings;
     private ServerSocket server;
 
-    public List<Thread> getBotThreads() {
-        return botThreads;
-    }
 
     private List<Thread> botThreads;
 
+
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        new Server(12345).run();
+        new Server().run();
     }
 
-    public Server(int port) {
-        this.port = port;
+    public Server() throws IOException {
+        SetServerInfo(this);
         this.clients = new ArrayList<PrintStream>();
         this.clientAuthStrings = new ArrayList<String>();
         this.botThreads = new ArrayList<Thread>();
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public List<Thread> getBotThreads() {
+        return botThreads;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     public void run() throws IOException, NoSuchAlgorithmException {
         server = new ServerSocket(port) {
@@ -57,7 +66,7 @@ public class Server {
                 this.close();
             }
         };
-        System.out.println("Port 12345 is now open.");
+        System.out.println("Port " + this.port + " is now open.");
 
         while (true) {
             // accepts a new client

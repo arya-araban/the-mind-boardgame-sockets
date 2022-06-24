@@ -1,19 +1,25 @@
 package sockets;
 
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import static sockets.FileSocketUtils.SetClientInfo;
+
 public class Client {
 
+
     private String host;
+
     private int port;
 
     private boolean isHost;
@@ -24,17 +30,24 @@ public class Client {
         System.out.println("Awaiting server response.."); //if server not open, when it opens client will connect.
         while (true) {
             try {
-                new Client("127.0.0.1", 12345).run();
+                new Client().run();
                 break;
             } catch (Exception e) {
+                // e.printStackTrace();
                 TimeUnit.SECONDS.sleep(2);
             }
         }
     }
 
+    public Client() throws IOException {
+        SetClientInfo(this);
+    }
 
-    public Client(String host, int port) {
+    public void setHost(String host) {
         this.host = host;
+    }
+
+    public void setPort(int port) {
         this.port = port;
     }
 
