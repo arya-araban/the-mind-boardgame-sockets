@@ -5,7 +5,7 @@ Implementation of The Mind boardgame in a client/server enviorment using sockets
 This project is the final project of the 2022 Java course of Sharif University.
 
 ## Game Rules
-[This video](https://www.youtube.com/watch?v=uXl8MC0GMYE) explains the rules of Mind in great detail.
+[This video](https://www.youtube.com/watch?v=uXl8MC0GMYE) explains the rules of Mind in adequate detail.
 
 ## How to use the app
 
